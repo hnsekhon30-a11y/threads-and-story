@@ -30,9 +30,9 @@ const PRODUCTS = [
   { name: "Sage Linen Trousers", price: "£120", image: collection1, tag: "Linen" },
   { name: "Blue Hour Shirt", price: "£95", image: collection2, tag: "New" },
   { name: "Rose Knit Sweater", price: "£140", image: collection3, tag: "Knit" },
-  { name: "Sand Linen Dress", price: "£160", image: hero, tag: "Linen" },
-  { name: "Pastel Blue Coat", price: "£260", image: collection2, tag: "New" },
-  { name: "Tan Wide Trouser", price: "£110", image: collection1, tag: "Tan" },
+  { name: "Sand Linen Dress", price: "£160", image: collection4, tag: "Linen" },
+  { name: "Pastel Blue Coat", price: "£260", image: collection5, tag: "Tan" },
+  { name: "Tan Wide Trouser", price: "£110", image: collection5, tag: "Tan" },
 ];
 
 const FILTERS = ["All", "Linen", "Knit", "New", "Tan"] as const;
