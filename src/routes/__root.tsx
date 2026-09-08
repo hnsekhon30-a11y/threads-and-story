@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -16,19 +16,16 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h1 className="font-serif text-7xl text-foreground">404</h1>
+        <p className="mt-4 text-sm text-muted-foreground">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
+        <Link
+          to="/"
+          className="mt-6 inline-block border-b border-foreground pb-0.5 text-xs uppercase tracking-[0.2em]"
+        >
+          Back home
+        </Link>
       </div>
     </div>
   );
@@ -44,29 +41,19 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
+        <h1 className="font-serif text-2xl text-foreground">This page didn't load</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          Something went wrong on our end. Please try refreshing.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
-        </div>
+        <button
+          onClick={() => {
+            router.invalidate();
+            reset();
+          }}
+          className="mt-6 border-b border-foreground pb-0.5 text-xs uppercase tracking-[0.2em]"
+        >
+          Try again
+        </button>
       </div>
     </div>
   );
@@ -77,21 +64,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Rosewood — Soft, considered clothing" },
+      {
+        name: "description",
+        content:
+          "Rosewood is a clothing brand built on natural fibres, slow craft and a soft palette of rose, beige, tan, sage and pastel blue.",
+      },
+      { name: "author", content: "Rosewood" },
+      { property: "og:title", content: "Rosewood — Soft, considered clothing" },
+      {
+        property: "og:description",
+        content:
+          "Natural fibres, slow craft and a soft palette of rose, beige, tan, sage and pastel blue.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@300;400;500;600&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
   shellComponent: RootShell,
@@ -114,13 +111,118 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+const NAV = [
+  { label: "Shop", to: "/shop" },
+  { label: "Lookbook", to: "/lookbook" },
+  { label: "About", to: "/about" },
+  { label: "Contact", to: "/contact" },
+] as const;
+
+function Header() {
+  const [open, setOpen] = useState(false);
+  return (
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+        <Link to="/" className="font-serif text-2xl tracking-tight text-foreground">
+          Rosewood
+        </Link>
+        <nav className="hidden items-center gap-9 md:flex">
+          {NAV.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className="text-xs uppercase tracking-[0.18em] text-foreground/80 transition-colors hover:text-primary"
+              activeProps={{ className: "text-primary" }}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <button
+          className="md:hidden"
+          aria-label="Open menu"
+          onClick={() => setOpen((v) => !v)}
+        >
+          <span className="text-xs uppercase tracking-[0.18em]">Menu</span>
+        </button>
+      </div>
+      {open && (
+        <nav className="border-t border-border/60 bg-background px-6 py-4 md:hidden">
+          <ul className="flex flex-col gap-4">
+            {NAV.map((item) => (
+              <li key={item.to}>
+                <Link
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  className="text-xs uppercase tracking-[0.18em] text-foreground/80"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </header>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t border-border/60 bg-background">
+      <div className="mx-auto max-w-7xl px-6 py-14">
+        <div className="grid gap-10 md:grid-cols-4">
+          <div className="md:col-span-2">
+            <p className="font-serif text-2xl text-foreground">Rosewood</p>
+            <p className="mt-3 max-w-xs text-sm text-muted-foreground">
+              Soft, considered clothing made from natural fibres in small batches.
+            </p>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Explore</p>
+            <ul className="mt-4 space-y-2">
+              {NAV.map((item) => (
+                <li key={item.to}>
+                  <Link
+                    to={item.to}
+                    className="text-sm text-foreground/80 transition-colors hover:text-primary"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Follow</p>
+            <ul className="mt-4 space-y-2">
+              <li><a href="#" className="text-sm text-foreground/80 hover:text-primary">Instagram</a></li>
+              <li><a href="#" className="text-sm text-foreground/80 hover:text-primary">Pinterest</a></li>
+              <li><a href="#" className="text-sm text-foreground/80 hover:text-primary">Newsletter</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="mt-12 flex flex-col items-start justify-between gap-2 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
+          <p>© {new Date().getFullYear()} Rosewood. All rights reserved.</p>
+          <p>Made slowly, with care.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
     </QueryClientProvider>
   );
 }
