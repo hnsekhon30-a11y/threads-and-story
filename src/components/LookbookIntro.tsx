@@ -47,6 +47,8 @@ export function LookbookIntro() {
     return () => window.clearInterval(id);
   }, []);
 
+  const current = SLIDES[index] ?? SLIDES[0]!;
+
   const go = (dir: number) =>
     setIndex((i) => (i + dir + SLIDES.length) % SLIDES.length);
 

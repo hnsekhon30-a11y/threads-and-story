@@ -48,39 +48,28 @@ const COLLECTIONS = [
 function Index() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative">
-        <img
-          src={hero}
-          alt="A model in soft rose-pink and beige linen clothing"
-          width={1920}
-          height={1080}
-          className="h-[70vh] min-h-[480px] w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/20 to-transparent" />
-        <div className="absolute inset-0 flex items-center">
-          <div className="mx-auto w-full max-w-7xl px-6">
-            <div className="max-w-lg">
-              <p className="text-xs uppercase tracking-[0.3em] text-foreground/70">
-                Autumn / Winter 2026
-              </p>
-              <h1 className="mt-5 text-balance font-serif text-5xl leading-[1.05] text-foreground sm:text-6xl">
-                Soft on the skin, slow by design.
-              </h1>
-              <p className="mt-5 max-w-md text-sm text-foreground/70">
-                Clothing made from natural fibres in small batches — rose, beige,
-                tan, sage and a whisper of pastel blue.
-              </p>
-              <Link
-                to="/shop"
-                className="mt-8 inline-block border-b border-foreground pb-1 text-xs uppercase tracking-[0.2em] text-foreground transition-colors hover:border-primary hover:text-primary"
-              >
-                Shop the collection
-              </Link>
-            </div>
-          </div>
-        </div>
+      {/* Full-screen name + lookbook carousel */}
+      <LookbookIntro />
+
+      <section className="mx-auto max-w-7xl px-6 pt-20">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+          Autumn / Winter 2026
+        </p>
+        <h2 className="mt-5 max-w-2xl text-balance font-serif text-5xl leading-[1.05] text-foreground">
+          Soft on the skin, slow by design.
+        </h2>
+        <p className="mt-5 max-w-md text-sm text-muted-foreground">
+          Clothing made from natural fibres in small batches — rose, beige, tan,
+          sage and a whisper of pastel blue.
+        </p>
+        <Link
+          to="/shop"
+          className="mt-8 inline-block border-b border-foreground pb-1 text-xs uppercase tracking-[0.2em] text-foreground transition-colors hover:border-primary hover:text-primary"
+        >
+          Shop the collection
+        </Link>
       </section>
+
 
       {/* Collections grid */}
       <section className="mx-auto max-w-7xl px-6 py-20">
