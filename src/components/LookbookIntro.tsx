@@ -20,6 +20,7 @@ const SPEED = 42; // px per second
 export function LookbookIntro() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
   const [revealed, setRevealed] = useState(false);
   const [started, setStarted] = useState(false);
