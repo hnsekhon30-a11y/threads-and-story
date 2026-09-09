@@ -15,140 +15,155 @@ const SLIDES = [
 ];
 
 const clamp = (n: number, min = 0, max = 1) => Math.min(max, Math.max(min, n));
+const SPEED = 42; // px per second
 
 export function LookbookIntro() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const dragRef = useRef({ active: false, startX: 0, startScroll: 0, moved: false });
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [started, setStarted] = useState(false);
 
-  // Keep scroll position inside the first copy so the loop feels endless
-  const normalize = () => {
-    const el = trackRef.current;
-    if (!el) return;
-    const half = el.scrollWidth / 2;
-    if (half <= 0) return;
-    if (el.scrollLeft >= half) el.scrollLeft -= half;
-    else if (el.scrollLeft < 0) el.scrollLeft += half;
-  };
+  const paused = useRef(false);
+  const offset = useRef(0);
+  const velocity = useRef(0);
+  const target = useRef<number | null>(null);
+  const drag = useRef({ active: false, lastX: 0, lastT: 0, id: -1 });
+  const progress = useRef(0);
+  const shown = useRef(0);
 
-  // Auto-advance
   useEffect(() => {
     let raf = 0;
     let last = performance.now();
-    const tick = (now: number) => {
-      const dt = now - last;
+
+    const loop = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
+
       const el = trackRef.current;
-      if (el && !paused && !dragRef.current.active) {
-        el.scrollLeft += (dt / 1000) * 60; // px per second
-        normalize();
+      if (el) {
+        const half = el.scrollWidth / 2 || 1;
+
+        if (drag.current.active) {
+          // offset already updated by pointer move
+        } else if (target.current !== null) {
+          const diff = target.current - offset.current;
+          offset.current += diff * Math.min(1, dt * 8);
+          if (Math.abs(diff) < 0.6) {
+            offset.current = target.current;
+            target.current = null;
+          }
+        } else if (Math.abs(velocity.current) > 8) {
+          offset.current += velocity.current * dt;
+          velocity.current *= Math.exp(-3 * dt);
+        } else {
+          velocity.current = 0;
+          if (!paused.current) offset.current += SPEED * dt;
+        }
+
+        offset.current = ((offset.current % half) + half) % half;
+        el.style.transform = `translate3d(${-offset.current}px,0,0)`;
       }
-      raf = requestAnimationFrame(tick);
+
+      // eased scroll progress for the name
+      const wrap = wrapRef.current;
+      if (wrap) {
+        const total = wrap.offsetHeight - window.innerHeight;
+        progress.current = clamp((window.scrollY - wrap.offsetTop) / (total || 1));
+      }
+      shown.current += (progress.current - shown.current) * Math.min(1, dt * 9);
+      const p = shown.current;
+      const name = nameRef.current;
+      if (name) {
+        name.style.transform = `translate3d(${-p * 38}vw, ${-p * 38}vh, 0) scale(${1 - 0.72 * p})`;
+        name.style.opacity = String(1 - p * 0.45);
+      }
+      const parent = trackRef.current?.parentElement;
+      if (parent) parent.style.opacity = String(clamp(p * 2.2));
+      setRevealed(p > 0.35);
+      setStarted(p > 0.05);
+
+      raf = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(tick);
+
+    raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [paused]);
+  }, []);
 
   const step = (dir: 1 | -1) => {
     const el = trackRef.current;
     if (!el) return;
     const card = el.querySelector("figure");
     const width = card ? card.getBoundingClientRect().width + 24 : el.clientWidth * 0.8;
-    el.scrollBy({ left: dir * width, behavior: "smooth" });
-    window.setTimeout(normalize, 450);
+    velocity.current = 0;
+    target.current = offset.current + dir * width;
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
-    const el = trackRef.current;
-    if (!el) return;
-    dragRef.current = {
-      active: true,
-      startX: e.clientX,
-      startScroll: el.scrollLeft,
-      moved: false,
-    };
-    el.setPointerCapture(e.pointerId);
+    drag.current = { active: true, lastX: e.clientX, lastT: performance.now(), id: e.pointerId };
+    velocity.current = 0;
+    target.current = null;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    const el = trackRef.current;
-    const d = dragRef.current;
-    if (!el || !d.active) return;
-    const dx = e.clientX - d.startX;
-    if (Math.abs(dx) > 4) d.moved = true;
-    el.scrollLeft = d.startScroll - dx;
-    normalize();
+    const d = drag.current;
+    if (!d.active) return;
+    const now = performance.now();
+    const dx = e.clientX - d.lastX;
+    const dt = Math.max(8, now - d.lastT) / 1000;
+    offset.current -= dx;
+    velocity.current = -dx / dt;
+    d.lastX = e.clientX;
+    d.lastT = now;
   };
 
   const endDrag = (e: React.PointerEvent) => {
-    const el = trackRef.current;
-    if (el && el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
-    dragRef.current.active = false;
+    const el = e.currentTarget as HTMLElement;
+    if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    if (performance.now() - drag.current.lastT > 120) velocity.current = 0;
+    drag.current.active = false;
   };
-
-
-  useEffect(() => {
-    const onScroll = () => {
-      const el = wrapRef.current;
-      if (!el) return;
-      const total = el.offsetHeight - window.innerHeight;
-      const p = clamp((window.scrollY - el.offsetTop) / (total || 1));
-      setProgress(p);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
-
-  // Name: full-screen centred -> small, top-left
-  const scale = 1 - 0.72 * progress;
-  const x = -progress * 38;
-  const y = -progress * 38;
-  const revealed = progress > 0.35;
 
   return (
     <div ref={wrapRef} className="relative h-[220vh]">
       <div className="sticky top-0 flex h-screen w-full flex-col justify-center overflow-hidden bg-background">
         {/* Endless, swipeable square-photo carousel */}
         <div
-          className="group/car relative transition-opacity duration-700"
-          style={{ opacity: clamp(progress * 2.2) }}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
+          className="relative"
+          style={{ opacity: 0 }}
+          onMouseEnter={() => (paused.current = true)}
+          onMouseLeave={() => (paused.current = false)}
         >
-          <div
-            ref={trackRef}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={endDrag}
-            onPointerCancel={endDrag}
-            onTouchStart={() => setPaused(true)}
-            onTouchEnd={() => setPaused(false)}
-            className="flex cursor-grab gap-6 overflow-x-auto px-3 [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
-            style={{ touchAction: "pan-y", overscrollBehaviorX: "contain" }}
-          >
-            {[...SLIDES, ...SLIDES].map((s, i) => (
-              <figure
-                key={`${s.caption}-${i}`}
-                className="relative aspect-square h-[58vh] shrink-0 overflow-hidden sm:h-[64vh]"
-              >
-                <img
-                  src={s.image}
-                  alt={s.caption}
-                  className="h-full w-full object-cover"
-                  draggable={false}
-                />
-                <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/70 to-transparent p-5 pt-12 text-xs uppercase tracking-[0.25em] text-foreground/80">
-                  {s.caption}
-                </figcaption>
-              </figure>
-            ))}
+          <div className="overflow-hidden">
+            <div
+              ref={trackRef}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={endDrag}
+              onPointerCancel={endDrag}
+              onTouchStart={() => (paused.current = true)}
+              onTouchEnd={() => (paused.current = false)}
+              className="flex w-max cursor-grab gap-6 px-3 active:cursor-grabbing"
+              style={{ touchAction: "pan-y", willChange: "transform" }}
+            >
+              {[...SLIDES, ...SLIDES].map((s, i) => (
+                <figure
+                  key={`${s.caption}-${i}`}
+                  className="relative aspect-square h-[58vh] shrink-0 overflow-hidden sm:h-[64vh]"
+                >
+                  <img
+                    src={s.image}
+                    alt={s.caption}
+                    className="h-full w-full object-cover"
+                    draggable={false}
+                  />
+                  <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/70 to-transparent p-5 pt-12 text-xs uppercase tracking-[0.25em] text-foreground/80">
+                    {s.caption}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
           </div>
 
           <button
@@ -187,13 +202,9 @@ export function LookbookIntro() {
         {/* Big name that shrinks into the top-left corner */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <h1
+            ref={nameRef}
             className="font-serif text-[16vw] leading-none text-foreground sm:text-[13vw]"
-            style={{
-              transform: `translate(${x}vw, ${y}vh) scale(${scale})`,
-              transformOrigin: "center",
-              opacity: 1 - progress * 0.45,
-              willChange: "transform",
-            }}
+            style={{ transformOrigin: "center", willChange: "transform" }}
           >
             Rosewood
           </h1>
@@ -201,7 +212,7 @@ export function LookbookIntro() {
 
         <div
           className="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center text-xs uppercase tracking-[0.25em] text-foreground/60 transition-opacity duration-300"
-          style={{ opacity: progress > 0.05 ? 0 : 1 }}
+          style={{ opacity: started ? 0 : 1 }}
         >
           Scroll
         </div>
