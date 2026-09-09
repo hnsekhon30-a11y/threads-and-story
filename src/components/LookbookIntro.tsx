@@ -82,15 +82,28 @@ export function LookbookIntro() {
       }
       shown.current += (progress.current - shown.current) * (1 - Math.exp(-9 * dt));
       const p = shown.current;
+      // slow-in / slow-out curve, like the reference site's title hand-off
+      const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+
       const name = nameRef.current;
       if (name) {
-        name.style.transform = `translate3d(${-p * 38}vw, ${-p * 38}vh, 0) scale(${1 - 0.72 * p})`;
-        name.style.opacity = String(1 - p * 0.45);
+        name.style.transform = `translate3d(${-e * 38}vw, ${-e * 38}vh, 0) scale(${1 - 0.72 * e})`;
+        name.style.opacity = String(1 - e * 0.4);
+        name.style.letterSpacing = `${-0.01 - 0.03 * e}em`;
       }
-      const parent = trackRef.current?.parentElement;
-      if (parent) parent.style.opacity = String(clamp(p * 2.2));
+
+      // photos lift into place from below while the title travels away
+      const stage = stageRef.current;
+      if (stage) {
+        const enter = clamp(p / 0.6);
+        const ee = 1 - Math.pow(1 - enter, 3);
+        stage.style.opacity = String(ee);
+        stage.style.transform = `translate3d(0, ${(1 - ee) * 12}vh, 0) scale(${0.94 + 0.06 * ee})`;
+        stage.style.filter = `blur(${(1 - ee) * 6}px)`;
+      }
       setRevealed(p > 0.35);
       setStarted(p > 0.05);
+
 
       raf = requestAnimationFrame(loop);
     };
