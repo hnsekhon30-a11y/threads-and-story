@@ -115,12 +115,24 @@ export function LookbookIntro() {
   return (
     <div ref={wrapRef} className="relative h-[220vh]">
       <div className="sticky top-0 flex h-screen w-full flex-col justify-center overflow-hidden bg-background">
-        {/* Infinite square-photo marquee */}
+        {/* Endless, swipeable square-photo carousel */}
         <div
-          className="transition-opacity duration-700"
+          className="group/car relative transition-opacity duration-700"
           style={{ opacity: clamp(progress * 2.2) }}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
         >
-          <div className="animate-marquee flex w-max gap-6 px-3 hover:[animation-play-state:paused]">
+          <div
+            ref={trackRef}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+            onTouchStart={() => setPaused(true)}
+            onTouchEnd={() => setPaused(false)}
+            className="flex cursor-grab gap-6 overflow-x-auto px-3 [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
+            style={{ touchAction: "pan-y", overscrollBehaviorX: "contain" }}
+          >
             {[...SLIDES, ...SLIDES].map((s, i) => (
               <figure
                 key={`${s.caption}-${i}`}
@@ -138,6 +150,23 @@ export function LookbookIntro() {
               </figure>
             ))}
           </div>
+
+          <button
+            type="button"
+            aria-label="Previous photo"
+            onClick={() => step(-1)}
+            className="absolute left-3 top-1/2 hidden -translate-y-1/2 border border-foreground/30 bg-background/70 px-3 py-2 text-xs uppercase tracking-[0.2em] text-foreground backdrop-blur transition-colors hover:border-primary hover:text-primary sm:block"
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            aria-label="Next photo"
+            onClick={() => step(1)}
+            className="absolute right-3 top-1/2 hidden -translate-y-1/2 border border-foreground/30 bg-background/70 px-3 py-2 text-xs uppercase tracking-[0.2em] text-foreground backdrop-blur transition-colors hover:border-primary hover:text-primary sm:block"
+          >
+            →
+          </button>
         </div>
 
         <div
