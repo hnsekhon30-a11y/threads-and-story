@@ -65,10 +65,10 @@ export function LookbookIntro() {
         <div
           className="absolute inset-0 transition-opacity duration-700"
           style={{ opacity: clamp(progress * 2.2) }}
-          onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
+          onTouchStart={(e) => (touchX.current = e.touches[0]!.clientX)}
           onTouchEnd={(e) => {
             if (touchX.current === null) return;
-            const dx = e.changedTouches[0].clientX - touchX.current;
+            const dx = e.changedTouches[0]!.clientX - touchX.current;
             if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
             touchX.current = null;
           }}
@@ -93,7 +93,7 @@ export function LookbookIntro() {
                 Autumn / Winter 2026
               </p>
               <p className="mt-3 font-serif text-3xl text-foreground">
-                {SLIDES[index].caption}
+                {current.caption}
               </p>
               <Link
                 to="/lookbook"
