@@ -89,7 +89,7 @@ export function LookbookIntro() {
         {/* Big name that shrinks into the top-left corner */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <h1
-            className="font-serif text-[16vw] leading-none text-foreground mix-blend-difference sm:text-[13vw]"
+            className="font-serif text-[16vw] leading-none text-foreground sm:text-[13vw]"
             style={{
               transform: `translate(${x}vw, ${y}vh) scale(${scale})`,
               transformOrigin: "center",
