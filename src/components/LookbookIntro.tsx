@@ -18,7 +18,76 @@ const clamp = (n: number, min = 0, max = 1) => Math.min(max, Math.max(min, n));
 
 export function LookbookIntro() {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const dragRef = useRef({ active: false, startX: 0, startScroll: 0, moved: false });
+
+  // Keep scroll position inside the first copy so the loop feels endless
+  const normalize = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    const half = el.scrollWidth / 2;
+    if (half <= 0) return;
+    if (el.scrollLeft >= half) el.scrollLeft -= half;
+    else if (el.scrollLeft < 0) el.scrollLeft += half;
+  };
+
+  // Auto-advance
+  useEffect(() => {
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = now - last;
+      last = now;
+      const el = trackRef.current;
+      if (el && !paused && !dragRef.current.active) {
+        el.scrollLeft += (dt / 1000) * 60; // px per second
+        normalize();
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [paused]);
+
+  const step = (dir: 1 | -1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.querySelector("figure");
+    const width = card ? card.getBoundingClientRect().width + 24 : el.clientWidth * 0.8;
+    el.scrollBy({ left: dir * width, behavior: "smooth" });
+    window.setTimeout(normalize, 450);
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    const el = trackRef.current;
+    if (!el) return;
+    dragRef.current = {
+      active: true,
+      startX: e.clientX,
+      startScroll: el.scrollLeft,
+      moved: false,
+    };
+    el.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    const el = trackRef.current;
+    const d = dragRef.current;
+    if (!el || !d.active) return;
+    const dx = e.clientX - d.startX;
+    if (Math.abs(dx) > 4) d.moved = true;
+    el.scrollLeft = d.startScroll - dx;
+    normalize();
+  };
+
+  const endDrag = (e: React.PointerEvent) => {
+    const el = trackRef.current;
+    if (el && el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    dragRef.current.active = false;
+  };
+
 
   useEffect(() => {
     const onScroll = () => {
