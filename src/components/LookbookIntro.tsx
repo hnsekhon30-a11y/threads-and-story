@@ -28,7 +28,7 @@ export function LookbookIntro() {
   const offset = useRef(0);
   const velocity = useRef(0);
   const target = useRef<number | null>(null);
-  const drag = useRef({ active: false, lastX: 0, lastT: 0, id: -1 });
+  const drag = useRef({ active: false, lastX: 0, lastT: 0, id: -1, pendingDx: 0 });
   const progress = useRef(0);
   const shown = useRef(0);
 
@@ -45,24 +45,33 @@ export function LookbookIntro() {
         const half = el.scrollWidth / 2 || 1;
 
         if (drag.current.active) {
-          // offset already updated by pointer move
+          // apply pointer movement accumulated since the last frame
+          const dx = drag.current.pendingDx;
+          drag.current.pendingDx = 0;
+          offset.current -= dx;
+          // exponential moving average keeps the throw velocity stable
+          const instant = -dx / dt;
+          velocity.current += (instant - velocity.current) * Math.min(1, dt * 12);
         } else if (target.current !== null) {
           const diff = target.current - offset.current;
-          offset.current += diff * Math.min(1, dt * 8);
-          if (Math.abs(diff) < 0.6) {
+          offset.current += diff * (1 - Math.exp(-9 * dt));
+          if (Math.abs(diff) < 0.4) {
             offset.current = target.current;
             target.current = null;
           }
-        } else if (Math.abs(velocity.current) > 8) {
+        } else if (Math.abs(velocity.current) > SPEED) {
           offset.current += velocity.current * dt;
-          velocity.current *= Math.exp(-3 * dt);
+          // decay towards the idle drift speed instead of towards zero
+          const dir = Math.sign(velocity.current);
+          const rest = dir >= 0 ? SPEED : -SPEED;
+          velocity.current = rest + (velocity.current - rest) * Math.exp(-2.6 * dt);
         } else {
           velocity.current = 0;
           if (!paused.current) offset.current += SPEED * dt;
         }
 
         offset.current = ((offset.current % half) + half) % half;
-        el.style.transform = `translate3d(${-offset.current}px,0,0)`;
+        el.style.transform = `translate3d(${-Math.round(offset.current * 100) / 100}px,0,0)`;
       }
 
       // eased scroll progress for the name
@@ -71,7 +80,7 @@ export function LookbookIntro() {
         const total = wrap.offsetHeight - window.innerHeight;
         progress.current = clamp((window.scrollY - wrap.offsetTop) / (total || 1));
       }
-      shown.current += (progress.current - shown.current) * Math.min(1, dt * 9);
+      shown.current += (progress.current - shown.current) * (1 - Math.exp(-9 * dt));
       const p = shown.current;
       const name = nameRef.current;
       if (name) {
@@ -96,11 +105,19 @@ export function LookbookIntro() {
     const card = el.querySelector("figure");
     const width = card ? card.getBoundingClientRect().width + 24 : el.clientWidth * 0.8;
     velocity.current = 0;
-    target.current = offset.current + dir * width;
+    const from = target.current ?? offset.current;
+    target.current = from + dir * width;
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
-    drag.current = { active: true, lastX: e.clientX, lastT: performance.now(), id: e.pointerId };
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    drag.current = {
+      active: true,
+      lastX: e.clientX,
+      lastT: performance.now(),
+      id: e.pointerId,
+      pendingDx: 0,
+    };
     velocity.current = 0;
     target.current = null;
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -108,22 +125,31 @@ export function LookbookIntro() {
 
   const onPointerMove = (e: React.PointerEvent) => {
     const d = drag.current;
-    if (!d.active) return;
-    const now = performance.now();
-    const dx = e.clientX - d.lastX;
-    const dt = Math.max(8, now - d.lastT) / 1000;
-    offset.current -= dx;
-    velocity.current = -dx / dt;
-    d.lastX = e.clientX;
-    d.lastT = now;
+    if (!d.active || d.id !== e.pointerId) return;
+    // coalesced events give sub-frame precision on high-rate touch screens
+    const events =
+      typeof e.nativeEvent.getCoalescedEvents === "function"
+        ? e.nativeEvent.getCoalescedEvents()
+        : [];
+    const points = events.length ? events : [e.nativeEvent];
+    for (const p of points) {
+      d.pendingDx += p.clientX - d.lastX;
+      d.lastX = p.clientX;
+    }
+    d.lastT = performance.now();
   };
 
   const endDrag = (e: React.PointerEvent) => {
     const el = e.currentTarget as HTMLElement;
     if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
-    if (performance.now() - drag.current.lastT > 120) velocity.current = 0;
+    if (!drag.current.active) return;
+    // a long pause before release means the finger stopped: no fling
+    if (performance.now() - drag.current.lastT > 90) velocity.current = 0;
+    velocity.current = Math.max(-3200, Math.min(3200, velocity.current));
     drag.current.active = false;
+    drag.current.pendingDx = 0;
   };
+
 
   return (
     <div ref={wrapRef} className="relative h-[220vh]">
