@@ -18,7 +18,76 @@ const clamp = (n: number, min = 0, max = 1) => Math.min(max, Math.max(min, n));
 
 export function LookbookIntro() {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const dragRef = useRef({ active: false, startX: 0, startScroll: 0, moved: false });
+
+  // Keep scroll position inside the first copy so the loop feels endless
+  const normalize = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    const half = el.scrollWidth / 2;
+    if (half <= 0) return;
+    if (el.scrollLeft >= half) el.scrollLeft -= half;
+    else if (el.scrollLeft < 0) el.scrollLeft += half;
+  };
+
+  // Auto-advance
+  useEffect(() => {
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = now - last;
+      last = now;
+      const el = trackRef.current;
+      if (el && !paused && !dragRef.current.active) {
+        el.scrollLeft += (dt / 1000) * 60; // px per second
+        normalize();
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [paused]);
+
+  const step = (dir: 1 | -1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.querySelector("figure");
+    const width = card ? card.getBoundingClientRect().width + 24 : el.clientWidth * 0.8;
+    el.scrollBy({ left: dir * width, behavior: "smooth" });
+    window.setTimeout(normalize, 450);
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    const el = trackRef.current;
+    if (!el) return;
+    dragRef.current = {
+      active: true,
+      startX: e.clientX,
+      startScroll: el.scrollLeft,
+      moved: false,
+    };
+    el.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    const el = trackRef.current;
+    const d = dragRef.current;
+    if (!el || !d.active) return;
+    const dx = e.clientX - d.startX;
+    if (Math.abs(dx) > 4) d.moved = true;
+    el.scrollLeft = d.startScroll - dx;
+    normalize();
+  };
+
+  const endDrag = (e: React.PointerEvent) => {
+    const el = trackRef.current;
+    if (el && el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    dragRef.current.active = false;
+  };
+
 
   useEffect(() => {
     const onScroll = () => {
@@ -46,12 +115,24 @@ export function LookbookIntro() {
   return (
     <div ref={wrapRef} className="relative h-[220vh]">
       <div className="sticky top-0 flex h-screen w-full flex-col justify-center overflow-hidden bg-background">
-        {/* Infinite square-photo marquee */}
+        {/* Endless, swipeable square-photo carousel */}
         <div
-          className="transition-opacity duration-700"
+          className="group/car relative transition-opacity duration-700"
           style={{ opacity: clamp(progress * 2.2) }}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
         >
-          <div className="animate-marquee flex w-max gap-6 px-3 hover:[animation-play-state:paused]">
+          <div
+            ref={trackRef}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+            onTouchStart={() => setPaused(true)}
+            onTouchEnd={() => setPaused(false)}
+            className="flex cursor-grab gap-6 overflow-x-auto px-3 [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
+            style={{ touchAction: "pan-y", overscrollBehaviorX: "contain" }}
+          >
             {[...SLIDES, ...SLIDES].map((s, i) => (
               <figure
                 key={`${s.caption}-${i}`}
@@ -69,6 +150,23 @@ export function LookbookIntro() {
               </figure>
             ))}
           </div>
+
+          <button
+            type="button"
+            aria-label="Previous photo"
+            onClick={() => step(-1)}
+            className="absolute left-3 top-1/2 hidden -translate-y-1/2 border border-foreground/30 bg-background/70 px-3 py-2 text-xs uppercase tracking-[0.2em] text-foreground backdrop-blur transition-colors hover:border-primary hover:text-primary sm:block"
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            aria-label="Next photo"
+            onClick={() => step(1)}
+            className="absolute right-3 top-1/2 hidden -translate-y-1/2 border border-foreground/30 bg-background/70 px-3 py-2 text-xs uppercase tracking-[0.2em] text-foreground backdrop-blur transition-colors hover:border-primary hover:text-primary sm:block"
+          >
+            →
+          </button>
         </div>
 
         <div
