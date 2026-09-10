@@ -170,8 +170,9 @@ export function LookbookIntro() {
       <div className="sticky top-0 flex h-screen w-full flex-col justify-center overflow-hidden bg-background">
         {/* Endless, swipeable square-photo carousel */}
         <div
-          className="relative"
-          style={{ opacity: 0 }}
+          ref={stageRef}
+          className="relative opacity-0"
+          style={{ willChange: "transform, opacity, filter" }}
           onMouseEnter={() => (paused.current = true)}
           onMouseLeave={() => (paused.current = false)}
         >
