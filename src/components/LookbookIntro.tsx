@@ -88,13 +88,14 @@ export function LookbookIntro() {
 
       const name = nameRef.current;
       if (name) {
-        const rect = name.getBoundingClientRect();
         const scale = 1 - 0.82 * e;
-        const untransformedWidth = rect.width / Math.max(0.18, 1 - 0.82 * shown.current);
+        const untransformedWidth = name.offsetWidth;
         const viewportGutter = window.innerWidth < 640 ? 24 : 32;
         const targetCenterX = viewportGutter + (untransformedWidth * 0.18) / 2;
         const translateX = targetCenterX - window.innerWidth / 2;
-        name.style.transform = `translate3d(${translateX * e}px, ${-8 * e}px, 0) scale(${scale})`;
+        const targetY = window.innerWidth < 640 ? -64 : -78;
+        name.style.transform = `translate3d(${translateX * e}px, ${targetY * e}px, 0) scale(${scale})`;
+        name.style.opacity = String(1 - clamp((p - 0.88) / 0.12));
       }
 
       // Keep the lookbook visible throughout, with the subtle settling motion
@@ -245,7 +246,7 @@ export function LookbookIntro() {
         <div className="pointer-events-none absolute inset-x-0 top-5 z-10 flex justify-center overflow-visible sm:top-7">
           <h1
             ref={nameRef}
-            className="font-sans text-7xl font-semibold uppercase leading-none tracking-normal text-foreground sm:text-[13rem]"
+            className="font-sans text-[15vw] font-semibold uppercase leading-none tracking-normal text-foreground sm:text-[13rem]"
             style={{ transformOrigin: "center", willChange: "transform" }}
           >
             Rosewood
