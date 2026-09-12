@@ -73,25 +73,14 @@ export function LookbookIntro() {
         el.style.transform = `translate3d(${-Math.round(offset.current * 100) / 100}px,0,0)`;
       }
 
-      // eased scroll progress
+      // eased scroll progress (used to reveal the caption bar)
       const wrap = wrapRef.current;
       if (wrap) {
         const total = wrap.offsetHeight - window.innerHeight;
         progress.current = clamp((window.scrollY - wrap.offsetTop) / (total || 1));
       }
       shown.current += (progress.current - shown.current) * (1 - Math.exp(-9 * dt));
-      const p = shown.current;
-
-      // photos lift into place from below as you scroll
-      const stage = stageRef.current;
-      if (stage) {
-        const enter = clamp(p / 0.6);
-        const ee = 1 - Math.pow(1 - enter, 3);
-        stage.style.opacity = String(ee);
-        stage.style.transform = `translate3d(0, ${(1 - ee) * 12}vh, 0) scale(${0.94 + 0.06 * ee})`;
-        stage.style.filter = `blur(${(1 - ee) * 6}px)`;
-      }
-      setRevealed(p > 0.35);
+      setRevealed(shown.current > 0.35);
 
 
       raf = requestAnimationFrame(loop);
@@ -159,8 +148,7 @@ export function LookbookIntro() {
         {/* Endless, swipeable square-photo carousel */}
         <div
           ref={stageRef}
-          className="relative opacity-0"
-          style={{ willChange: "transform, opacity, filter" }}
+          className="relative"
           onMouseEnter={() => (paused.current = true)}
           onMouseLeave={() => (paused.current = false)}
         >
