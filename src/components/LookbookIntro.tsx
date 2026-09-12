@@ -75,7 +75,7 @@ export function LookbookIntro() {
         el.style.transform = `translate3d(${-Math.round(offset.current * 100) / 100}px,0,0)`;
       }
 
-      // eased scroll progress for the name
+      // The reference completes its logo hand-off within a short, deliberate scroll.
       const wrap = wrapRef.current;
       if (wrap) {
         const total = wrap.offsetHeight - window.innerHeight;
@@ -88,22 +88,23 @@ export function LookbookIntro() {
 
       const name = nameRef.current;
       if (name) {
-        name.style.transform = `translate3d(${-e * 38}vw, ${-e * 38}vh, 0) scale(${1 - 0.72 * e})`;
-        name.style.opacity = String(1 - e * 0.4);
-        name.style.letterSpacing = `${-0.01 - 0.03 * e}em`;
+        const rect = name.getBoundingClientRect();
+        const scale = 1 - 0.82 * e;
+        const untransformedWidth = rect.width / Math.max(0.18, 1 - 0.82 * shown.current);
+        const viewportGutter = window.innerWidth < 640 ? 24 : 32;
+        const targetCenterX = viewportGutter + (untransformedWidth * 0.18) / 2;
+        const translateX = targetCenterX - window.innerWidth / 2;
+        name.style.transform = `translate3d(${translateX * e}px, ${-8 * e}px, 0) scale(${scale})`;
       }
 
-      // photos lift into place from below while the title travels away
+      // Keep the lookbook visible throughout, with the subtle settling motion
+      // used by the reference rather than a delayed fade-in.
       const stage = stageRef.current;
       if (stage) {
-        const enter = clamp(p / 0.6);
-        const ee = 1 - Math.pow(1 - enter, 3);
-        stage.style.opacity = String(ee);
-        stage.style.transform = `translate3d(0, ${(1 - ee) * 12}vh, 0) scale(${0.94 + 0.06 * ee})`;
-        stage.style.filter = `blur(${(1 - ee) * 6}px)`;
+        stage.style.transform = `translate3d(0, ${-e * 3}vh, 0) scale(${1.035 - 0.035 * e})`;
       }
-      setRevealed(p > 0.35);
-      setStarted(p > 0.05);
+      setRevealed(p > 0.22);
+      setStarted(p > 0.025);
 
 
       raf = requestAnimationFrame(loop);
@@ -166,13 +167,13 @@ export function LookbookIntro() {
 
 
   return (
-    <div ref={wrapRef} className="relative h-[220vh]">
+    <div ref={wrapRef} className="relative h-[165vh] sm:h-[145vh]">
       <div className="sticky top-0 flex h-screen w-full flex-col justify-center overflow-hidden bg-background">
         {/* Endless, swipeable square-photo carousel */}
         <div
           ref={stageRef}
-          className="relative opacity-0"
-          style={{ willChange: "transform, opacity, filter" }}
+          className="relative"
+          style={{ willChange: "transform" }}
           onMouseEnter={() => (paused.current = true)}
           onMouseLeave={() => (paused.current = false)}
         >
@@ -191,7 +192,7 @@ export function LookbookIntro() {
               {[...SLIDES, ...SLIDES].map((s, i) => (
                 <figure
                   key={`${s.caption}-${i}`}
-                  className="relative aspect-square h-[58vh] shrink-0 overflow-hidden sm:h-[64vh]"
+                  className="relative aspect-square h-[66vh] shrink-0 overflow-hidden sm:h-[72vh]"
                 >
                   <img
                     src={s.image}
@@ -240,11 +241,11 @@ export function LookbookIntro() {
           </Link>
         </div>
 
-        {/* Big name that shrinks into the top-left corner */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        {/* Oversized masthead that resolves into the upper-left brand position */}
+        <div className="pointer-events-none absolute inset-x-0 top-5 z-10 flex justify-center overflow-visible sm:top-7">
           <h1
             ref={nameRef}
-            className="font-serif text-[16vw] leading-none text-foreground sm:text-[13vw]"
+            className="font-sans text-7xl font-semibold uppercase leading-none tracking-normal text-foreground sm:text-[13rem]"
             style={{ transformOrigin: "center", willChange: "transform" }}
           >
             Rosewood
