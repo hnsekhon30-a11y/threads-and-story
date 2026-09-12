@@ -21,9 +21,7 @@ export function LookbookIntro() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const nameRef = useRef<HTMLHeadingElement>(null);
   const [revealed, setRevealed] = useState(false);
-  const [started, setStarted] = useState(false);
 
   const paused = useRef(false);
   const offset = useRef(0);
@@ -75,7 +73,7 @@ export function LookbookIntro() {
         el.style.transform = `translate3d(${-Math.round(offset.current * 100) / 100}px,0,0)`;
       }
 
-      // eased scroll progress for the name
+      // eased scroll progress
       const wrap = wrapRef.current;
       if (wrap) {
         const total = wrap.offsetHeight - window.innerHeight;
@@ -83,17 +81,8 @@ export function LookbookIntro() {
       }
       shown.current += (progress.current - shown.current) * (1 - Math.exp(-9 * dt));
       const p = shown.current;
-      // slow-in / slow-out curve, like the reference site's title hand-off
-      const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
 
-      const name = nameRef.current;
-      if (name) {
-        name.style.transform = `translate3d(${-e * 38}vw, ${-e * 38}vh, 0) scale(${1 - 0.72 * e})`;
-        name.style.opacity = String(1 - e * 0.4);
-        name.style.letterSpacing = `${-0.01 - 0.03 * e}em`;
-      }
-
-      // photos lift into place from below while the title travels away
+      // photos lift into place from below as you scroll
       const stage = stageRef.current;
       if (stage) {
         const enter = clamp(p / 0.6);
@@ -103,7 +92,6 @@ export function LookbookIntro() {
         stage.style.filter = `blur(${(1 - ee) * 6}px)`;
       }
       setRevealed(p > 0.35);
-      setStarted(p > 0.05);
 
 
       raf = requestAnimationFrame(loop);
@@ -240,23 +228,6 @@ export function LookbookIntro() {
           </Link>
         </div>
 
-        {/* Big name that shrinks into the top-left corner */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <h1
-            ref={nameRef}
-            className="font-serif text-[16vw] leading-none text-foreground sm:text-[13vw]"
-            style={{ transformOrigin: "center", willChange: "transform" }}
-          >
-            Rosewood
-          </h1>
-        </div>
-
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center text-xs uppercase tracking-[0.25em] text-foreground/60 transition-opacity duration-300"
-          style={{ opacity: started ? 0 : 1 }}
-        >
-          Scroll
-        </div>
       </div>
     </div>
   );
