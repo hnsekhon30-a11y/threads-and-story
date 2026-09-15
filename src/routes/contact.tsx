@@ -4,13 +4,13 @@ import { useState } from "react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Rosewood" },
+      { title: "Contact — Haseena By Hasneet" },
       {
         name: "description",
         content:
-          "Get in touch with Rosewood — find our studio, ask about a piece, or join the newsletter for early access to new collections.",
+          "Get in touch with Haseena By Hasneet — find our studio, ask about a piece, or join the newsletter for early access to new collections.",
       },
-      { property: "og:title", content: "Contact — Rosewood" },
+      { property: "og:title", content: "Contact — Haseena By Hasneet" },
       {
         property: "og:description",
         content:
@@ -73,8 +73,8 @@ function ContactPage() {
                 Email
               </dt>
               <dd className="mt-1 text-foreground/80">
-                <a href="mailto:hello@rosewood.example" className="hover:text-primary">
-                  hello@rosewood.example
+                <a href="mailto:hello@haseenaabyhasneet.example" className="hover:text-primary">
+                  hello@haseenaabyhasneet.example
                 </a>
               </dd>
             </div>
