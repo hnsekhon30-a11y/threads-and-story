@@ -9,13 +9,13 @@ import collection5 from "@/assets/collection-5.jpg";
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Shop — haseenaabyhasneetkaur" },
+      { title: "Shop — Haseenaa by Hasneet Kaur" },
       {
         name: "description",
         content:
-          "Browse haseenaabyhasneetkaur collections: linen separates, pastel blue layers and dusty rose knitwear, made from natural fibres.",
+          "Browse Haseenaa by Hasneet Kaur collections: linen separates, pastel blue layers and dusty rose knitwear, made from natural fibres.",
       },
-      { property: "og:title", content: "Shop — haseenaabyhasneetkaur" },
+      { property: "og:title", content: "Shop — Haseenaa by Hasneet Kaur" },
       {
         property: "og:description",
         content:

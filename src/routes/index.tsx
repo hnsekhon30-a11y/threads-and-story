@@ -7,13 +7,13 @@ import collection3 from "@/assets/collection-3.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "haseenaabyhasneetkaur — Soft, considered clothing" },
+      { title: "Haseenaa by Hasneet Kaur — Soft, considered clothing" },
       {
         name: "description",
         content:
-          "haseenaabyhasneetkaur is a clothing brand built on natural fibres, slow craft and a soft palette of rose, beige, tan, sage and pastel blue.",
+          "Haseenaa by Hasneet Kaur is a clothing brand built on natural fibres, slow craft and a soft palette of rose, beige, tan, sage and pastel blue.",
       },
-      { property: "og:title", content: "haseenaabyhasneetkaur — Soft, considered clothing" },
+      { property: "og:title", content: "Haseenaa by Hasneet Kaur — Soft, considered clothing" },
       {
         property: "og:description",
         content:
@@ -141,7 +141,7 @@ function Index() {
           <div className="overflow-hidden bg-muted">
             <img
               src={collection2}
-              alt="A look from the haseenaabyhasneetkaur lookbook"
+              alt="A look from the Haseenaa by Hasneet Kaur lookbook"
               width={800}
               height={1000}
               loading="lazy"

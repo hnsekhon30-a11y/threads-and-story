@@ -4,13 +4,13 @@ import { useState } from "react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — haseenaabyhasneetkaur" },
+      { title: "Contact — Haseenaa by Hasneet Kaur" },
       {
         name: "description",
         content:
-          "Get in touch with haseenaabyhasneetkaur — find our studio, ask about a piece, or join the newsletter for early access to new collections.",
+          "Get in touch with Haseenaa by Hasneet Kaur — find our studio, ask about a piece, or join the newsletter for early access to new collections.",
       },
-      { property: "og:title", content: "Contact — haseenaabyhasneetkaur" },
+      { property: "og:title", content: "Contact — Haseenaa by Hasneet Kaur" },
       {
         property: "og:description",
         content:

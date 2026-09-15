@@ -8,13 +8,13 @@ import hero from "@/assets/hero.jpg";
 export const Route = createFileRoute("/lookbook")({
   head: () => ({
     meta: [
-      { title: "Lookbook — haseenaabyhasneetkaur" },
+      { title: "Lookbook — Haseenaa by Hasneet Kaur" },
       {
         name: "description",
         content:
-          "The haseenaabyhasneetkaur autumn lookbook: soft layering, natural light and a quiet palette of rose, beige, tan and sage.",
+          "The Haseenaa by Hasneet Kaur autumn lookbook: soft layering, natural light and a quiet palette of rose, beige, tan and sage.",
       },
-      { property: "og:title", content: "Lookbook — haseenaabyhasneetkaur" },
+      { property: "og:title", content: "Lookbook — Haseenaa by Hasneet Kaur" },
       {
         property: "og:description",
         content:
@@ -50,7 +50,7 @@ function LookbookPage() {
         <div className="overflow-hidden bg-muted">
           <img
             src={lookbook}
-            alt="haseenaabyhasneetkaur lookbook editorial, two models in soft beige and sage"
+            alt="Haseenaa by Hasneet Kaur lookbook editorial, two models in soft beige and sage"
             width={1024}
             height={1280}
             className="w-full object-cover"
