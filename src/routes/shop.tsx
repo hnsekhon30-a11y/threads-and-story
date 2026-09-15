@@ -9,13 +9,13 @@ import collection5 from "@/assets/collection-5.jpg";
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Shop — Rosewood" },
+      { title: "Shop — haseenaabyhasneetkaur" },
       {
         name: "description",
         content:
-          "Browse Rosewood collections: linen separates, pastel blue layers and dusty rose knitwear, made from natural fibres.",
+          "Browse haseenaabyhasneetkaur collections: linen separates, pastel blue layers and dusty rose knitwear, made from natural fibres.",
       },
-      { property: "og:title", content: "Shop — Rosewood" },
+      { property: "og:title", content: "Shop — haseenaabyhasneetkaur" },
       {
         property: "og:description",
         content:
