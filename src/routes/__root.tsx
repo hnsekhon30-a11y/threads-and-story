@@ -64,14 +64,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Rosewood — Soft, considered clothing" },
+      { title: "Haseena By Hasneet — Soft, considered clothing" },
       {
         name: "description",
         content:
-          "Rosewood is a clothing brand built on natural fibres, slow craft and a soft palette of rose, beige, tan, sage and pastel blue.",
+          "Haseena By Hasneet is a clothing brand built on natural fibres, slow craft and a soft palette of rose, beige, tan, sage and pastel blue.",
       },
-      { name: "author", content: "Rosewood" },
-      { property: "og:title", content: "Rosewood — Soft, considered clothing" },
+      { name: "author", content: "Haseena By Hasneet" },
+      { property: "og:title", content: "Haseena By Hasneet — Soft, considered clothing" },
       {
         property: "og:description",
         content:
@@ -124,7 +124,7 @@ function Header() {
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
         <Link to="/" className="font-serif text-2xl tracking-tight text-foreground">
-          Rosewood
+          Haseena By Hasneet
         </Link>
         <nav className="hidden items-center gap-9 md:flex">
           {NAV.map((item) => (
@@ -173,7 +173,7 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-14">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <p className="font-serif text-2xl text-foreground">Rosewood</p>
+            <p className="font-serif text-2xl text-foreground">Haseena By Hasneet</p>
             <p className="mt-3 max-w-xs text-sm text-muted-foreground">
               Soft, considered clothing made from natural fibres in small batches.
             </p>
@@ -203,7 +203,7 @@ function Footer() {
           </div>
         </div>
         <div className="mt-12 flex flex-col items-start justify-between gap-2 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} Rosewood. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Haseena By Hasneet. All rights reserved.</p>
           <p>Made slowly, with care.</p>
         </div>
       </div>

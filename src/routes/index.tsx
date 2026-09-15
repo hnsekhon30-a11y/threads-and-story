@@ -7,13 +7,13 @@ import collection3 from "@/assets/collection-3.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Rosewood — Soft, considered clothing" },
+      { title: "Haseena By Hasneet — Soft, considered clothing" },
       {
         name: "description",
         content:
-          "Rosewood is a clothing brand built on natural fibres, slow craft and a soft palette of rose, beige, tan, sage and pastel blue.",
+          "Haseena By Hasneet is a clothing brand built on natural fibres, slow craft and a soft palette of rose, beige, tan, sage and pastel blue.",
       },
-      { property: "og:title", content: "Rosewood — Soft, considered clothing" },
+      { property: "og:title", content: "Haseena By Hasneet — Soft, considered clothing" },
       {
         property: "og:description",
         content:
@@ -141,7 +141,7 @@ function Index() {
           <div className="overflow-hidden bg-muted">
             <img
               src={collection2}
-              alt="A look from the Rosewood lookbook"
+              alt="A look from the Haseena By Hasneet lookbook"
               width={800}
               height={1000}
               loading="lazy"
