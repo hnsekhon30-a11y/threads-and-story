@@ -4,17 +4,17 @@ import about from "@/assets/about.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Rosewood" },
+      { title: "About — haseenaabyhasneetkaur" },
       {
         name: "description",
         content:
-          "Rosewood is a clothing brand built on natural fibres, slow craft and a soft, seasonal palette. Our story and our making.",
+          "haseenaabyhasneetkaur is a clothing brand built on natural fibres, slow craft and a soft, seasonal palette. Our story and our making.",
       },
-      { property: "og:title", content: "About — Rosewood" },
+      { property: "og:title", content: "About — haseenaabyhasneetkaur" },
       {
         property: "og:description",
         content:
-          "Natural fibres, slow craft and a soft, seasonal palette — the Rosewood story.",
+          "Natural fibres, slow craft and a soft, seasonal palette — the haseenaabyhasneetkaur story.",
       },
     ],
   }),
@@ -49,7 +49,7 @@ function AboutPage() {
               Clothing that feels like a slow morning.
             </h1>
             <p className="mt-5 text-sm text-foreground/70">
-              Rosewood began in a small atelier with a single idea: that what we
+              haseenaabyhasneetkaur began in a small atelier with a single idea: that what we
               wear should be as gentle as the day it came from. We choose natural
               fibres, finish in small batches, and let a soft, seasonal palette do
               the talking.
@@ -62,7 +62,7 @@ function AboutPage() {
           <div className="overflow-hidden bg-muted">
             <img
               src={about}
-              alt="The Rosewood atelier with fabric swatches in soft tones"
+              alt="The haseenaabyhasneetkaur atelier with fabric swatches in soft tones"
               width={1024}
               height={768}
               loading="lazy"
@@ -91,7 +91,7 @@ function AboutPage() {
           “We make fewer things, more slowly, in colours that ask nothing of you.”
         </p>
         <p className="mt-5 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          — The Rosewood studio
+          — The haseenaabyhasneetkaur studio
         </p>
       </section>
     </>
