@@ -141,7 +141,7 @@ function Index() {
           <div className="overflow-hidden bg-muted">
             <img
               src={collection2}
-              alt="A look from the haseenaabyhasneetkaur lookbook"
+              alt="A look from the Haseenaa by Hasneet Kaur lookbook"
               width={800}
               height={1000}
               loading="lazy"
