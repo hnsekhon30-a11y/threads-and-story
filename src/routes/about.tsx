@@ -4,17 +4,17 @@ import about from "@/assets/about.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Haseena By Hasneet" },
+      { title: "About — Rosewood" },
       {
         name: "description",
         content:
-          "Haseena By Hasneet is a clothing brand built on natural fibres, slow craft and a soft, seasonal palette. Our story and our making.",
+          "Rosewood is a clothing brand built on natural fibres, slow craft and a soft, seasonal palette. Our story and our making.",
       },
-      { property: "og:title", content: "About — Haseena By Hasneet" },
+      { property: "og:title", content: "About — Rosewood" },
       {
         property: "og:description",
         content:
-          "Natural fibres, slow craft and a soft, seasonal palette — the Haseena By Hasneet story.",
+          "Natural fibres, slow craft and a soft, seasonal palette — the Rosewood story.",
       },
     ],
   }),
@@ -49,7 +49,7 @@ function AboutPage() {
               Clothing that feels like a slow morning.
             </h1>
             <p className="mt-5 text-sm text-foreground/70">
-              Haseena By Hasneet began in a small atelier with a single idea: that what we
+              Rosewood began in a small atelier with a single idea: that what we
               wear should be as gentle as the day it came from. We choose natural
               fibres, finish in small batches, and let a soft, seasonal palette do
               the talking.
@@ -62,7 +62,7 @@ function AboutPage() {
           <div className="overflow-hidden bg-muted">
             <img
               src={about}
-              alt="The Haseena By Hasneet atelier with fabric swatches in soft tones"
+              alt="The Rosewood atelier with fabric swatches in soft tones"
               width={1024}
               height={768}
               loading="lazy"
@@ -91,7 +91,7 @@ function AboutPage() {
           “We make fewer things, more slowly, in colours that ask nothing of you.”
         </p>
         <p className="mt-5 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          — The Haseena By Hasneet studio
+          — The Rosewood studio
         </p>
       </section>
     </>
