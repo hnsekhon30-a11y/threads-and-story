@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import collection1 from "@/assets/collection-1.jpg";
-import collection2 from "@/assets/collection-2.jpg";
-import collection3 from "@/assets/collection-3.jpg";
-import collection4 from "@/assets/collection-4.jpg";
-import collection5 from "@/assets/collection-5.jpg";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProducts } from "@/lib/products";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
@@ -21,35 +18,28 @@ export const Route = createFileRoute("/shop")({
         content:
           "Linen separates, pastel blue layers and dusty rose knitwear, made from natural fibres.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ShopPage,
 });
 
-const PRODUCTS = [
-  { name: "Sage Linen Trousers", price: "£120", image: collection1, tag: "Linen" },
-  { name: "Blue Hour Shirt", price: "£95", image: collection2, tag: "New" },
-  { name: "Rose Knit Sweater", price: "£140", image: collection3, tag: "Knit" },
-  { name: "Sand Linen Dress", price: "£160", image: collection4, tag: "Linen" },
-  { name: "Pastel Blue Coat", price: "£260", image: collection5, tag: "Tan" },
-  { name: "Tan Wide Trouser", price: "£110", image: collection5, tag: "Tan" },
-];
-
 const FILTERS = ["All", "Linen", "Knit", "New", "Tan"] as const;
 
 function ShopPage() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
-  const items =
-    filter === "All"
-      ? PRODUCTS
-      : PRODUCTS.filter((p) => p.tag === filter);
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => fetchProducts(),
+  });
+
+  const items = filter === "All" ? products : products.filter((p) => p.tag === filter);
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-16">
       <div className="border-b border-border pb-8">
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          The Shop
-        </p>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">The Shop</p>
         <h1 className="mt-2 font-serif text-5xl text-foreground">All collections</h1>
         <p className="mt-3 max-w-md text-sm text-muted-foreground">
           Every piece is cut from natural fibres and finished in small batches.
@@ -73,32 +63,44 @@ function ShopPage() {
         ))}
       </div>
 
-      <div className="mt-10 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((p) => (
-          <article key={p.name} className="group">
-            <div className="relative overflow-hidden bg-muted">
-              <img
-                src={p.image}
-                alt={p.name}
-                width={800}
-                height={1000}
-                loading="lazy"
-                className="aspect-[4/5] w-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <span className="absolute left-3 top-3 bg-background/90 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-foreground">
-                {p.tag}
-              </span>
-            </div>
-            <div className="mt-4 flex items-baseline justify-between">
-              <h2 className="font-serif text-xl text-foreground">{p.name}</h2>
-              <span className="text-sm text-foreground/70">{p.price}</span>
-            </div>
-            <button className="mt-3 border-b border-border pb-0.5 text-[11px] uppercase tracking-[0.15em] text-muted-foreground transition-colors hover:border-primary hover:text-primary">
-              Add to bag
-            </button>
-          </article>
-        ))}
-      </div>
+      {isLoading ? (
+        <p className="mt-10 text-sm text-muted-foreground">Loading…</p>
+      ) : items.length === 0 ? (
+        <p className="mt-10 text-sm text-muted-foreground">
+          Nothing here yet — new pieces are on their way.
+        </p>
+      ) : (
+        <div className="mt-10 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((p) => (
+            <article key={p.id} className="group">
+              <div className="relative overflow-hidden bg-muted">
+                {p.imageUrl ? (
+                  <img
+                    src={p.imageUrl}
+                    alt={p.name}
+                    width={800}
+                    height={1000}
+                    loading="lazy"
+                    className="aspect-[4/5] w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="aspect-[4/5] w-full" />
+                )}
+                <span className="absolute left-3 top-3 bg-background/90 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-foreground">
+                  {p.tag}
+                </span>
+              </div>
+              <div className="mt-4 flex items-baseline justify-between">
+                <h2 className="font-serif text-xl text-foreground">{p.name}</h2>
+                <span className="text-sm text-foreground/70">{p.price}</span>
+              </div>
+              {p.description && (
+                <p className="mt-2 text-sm text-muted-foreground">{p.description}</p>
+              )}
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

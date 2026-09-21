@@ -191,6 +191,14 @@ function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  to="/admin"
+                  className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                >
+                  Studio
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
