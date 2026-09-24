@@ -125,7 +125,7 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-        <Link to="/" className="flex items-center gap-3">
+        <Link to="/" aria-label="Haseenaa by Hasneet Kaur — home" className="flex items-center">
           <img
             src={fullLogoAsset.url}
             alt="Haseenaa logo"
@@ -133,9 +133,6 @@ function Header() {
             height={700}
             className="h-16 w-auto object-contain sm:h-20"
           />
-          <span className="font-serif text-xl tracking-tight text-foreground sm:text-2xl">
-            Haseenaa by Hasneet Kaur
-          </span>
         </Link>
         <nav className="hidden items-center gap-9 md:flex">
           {NAV.map((item) => (
