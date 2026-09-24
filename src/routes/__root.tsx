@@ -131,7 +131,7 @@ function Header() {
             alt="Haseenaa logo"
             width={920}
             height={700}
-            className="h-14 w-auto object-contain sm:h-16"
+            className="h-16 w-auto object-contain sm:h-20"
           />
           <span className="font-serif text-xl tracking-tight text-foreground sm:text-2xl">
             Haseenaa by Hasneet Kaur
