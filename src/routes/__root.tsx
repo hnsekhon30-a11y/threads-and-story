@@ -11,7 +11,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import logoAsset from "@/assets/haseenaa-logo.png.asset.json";
-import markAsset from "@/assets/haseenaa-mark.png.asset.json";
+import fullLogoAsset from "@/assets/haseenaa-logo-full.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -127,11 +127,11 @@ function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
         <Link to="/" className="flex items-center gap-3">
           <img
-            src={markAsset.url}
-            alt=""
-            width={440}
-            height={470}
-            className="h-12 w-auto object-contain sm:h-14"
+            src={fullLogoAsset.url}
+            alt="Haseenaa logo"
+            width={920}
+            height={700}
+            className="h-16 w-auto object-contain sm:h-20"
           />
           <span className="font-serif text-xl tracking-tight text-foreground sm:text-2xl">
             Haseenaa by Hasneet Kaur
