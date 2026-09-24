@@ -11,6 +11,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import logoAsset from "@/assets/haseenaa-logo.png.asset.json";
+import markAsset from "@/assets/haseenaa-mark.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -123,15 +124,18 @@ function Header() {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-        <Link to="/" aria-label="Haseenaa by Hasneet Kaur — home" className="block">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
+        <Link to="/" className="flex items-center gap-3">
           <img
-            src={logoAsset.url}
-            alt="Haseenaa by Hasneet Kaur"
-            width={1024}
-            height={1024}
-            className="h-14 w-auto object-contain mix-blend-multiply sm:h-16"
+            src={markAsset.url}
+            alt=""
+            width={440}
+            height={470}
+            className="h-12 w-auto object-contain sm:h-14"
           />
+          <span className="font-serif text-xl tracking-tight text-foreground sm:text-2xl">
+            Haseenaa by Hasneet Kaur
+          </span>
         </Link>
         <nav className="hidden items-center gap-9 md:flex">
           {NAV.map((item) => (
