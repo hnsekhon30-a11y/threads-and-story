@@ -10,6 +10,7 @@ import {
 import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import logoAsset from "@/assets/haseenaa-logo.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -82,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -123,8 +124,14 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-        <Link to="/" className="font-serif text-xl tracking-tight text-foreground sm:text-2xl">
-          Haseenaa by Hasneet Kaur
+        <Link to="/" aria-label="Haseenaa by Hasneet Kaur — home" className="block">
+          <img
+            src={logoAsset.url}
+            alt="Haseenaa by Hasneet Kaur"
+            width={1024}
+            height={1024}
+            className="h-14 w-auto object-contain mix-blend-multiply sm:h-16"
+          />
         </Link>
         <nav className="hidden items-center gap-9 md:flex">
           {NAV.map((item) => (
@@ -173,7 +180,14 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-14">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <p className="font-serif text-2xl text-foreground">Haseenaa by Hasneet Kaur</p>
+            <img
+              src={logoAsset.url}
+              alt="Haseenaa by Hasneet Kaur"
+              width={1024}
+              height={1024}
+              loading="lazy"
+              className="h-32 w-auto object-contain mix-blend-multiply"
+            />
             <p className="mt-3 max-w-xs text-sm text-muted-foreground">
               Soft, considered clothing made from natural fibres in small batches.
             </p>
